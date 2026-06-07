@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>DG DRIFT | Cyber Bio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #03050b;
+            color: #eef5ff;
+            overflow-x: hidden;
+            cursor: none;
+            scroll-behavior: smooth;
+        }
+        /* ENHANCED CAPTCHA OVERLAY - PREMIUM STYLE */
+        .captcha-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(16px);
+            z-index: 20000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+        .captcha-card {
+            background: rgba(5, 15, 25, 0.75);
+            backdrop-filter: blur(25px);
+            border: 2px solid rgba(0, 255, 255, 0.6);
+            border-radius: 48px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 70px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(0,255,255,0.1);
+            animation: borderPulse 2s infinite;
+            transition: 0.3s;
+        }
+        @keyframes borderPulse {
+            0% { border-color: rgba(0,255,255,0.4); box-shadow: 0 0 30px rgba(0,255,255,0.2); }
+            50% { border-color: rgba(0,255,255,1); box-shadow: 0 0 70px rgba(0,255,255,0.7); }
+            100% { border-color: rgba(0,255,255,0.4); box-shadow: 0 0 30px rgba(0,255,255,0.2); }
+        }
+        .captcha-card i.main-icon {
+            font-size: 4.5rem;
+            color: #0ff;
+            text-shadow: 0 0 20px #0ff;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: iconGlow 1.5s infinite alternate;
+        }
+        @keyframes iconGlow {
+            from { text-shadow: 0 0 10px #0ff; }
+            to { text-shadow: 0 0 30px #0ff, 0 0 10px #0ff; }
+        }
+        .captcha-card h2 {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff, #0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .captcha-card .primary-text {
+            font-size: 0.9rem;
+            color: #aaf0ff;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            word-spacing: 2px;
+            border-top: 1px dashed rgba(0,255,255,0.3);
+            border-bottom: 1px dashed rgba(0,255,255,0.3);
+            display: inline-block;
+            padding: 5px 15px;
+        }
+        .captcha-input {
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            border: 1.5px solid #0ff;
+            padding: 14px 18px;
+            border-radius: 60px;
+            color: #0ff;
+            font-size: 1.3rem;
+            text-align: center;
+            letter-spacing: 4px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .captcha-input:focus {
+            box-shadow: 0 0 25px #0ff;
+            background: #000;
+        }
+        .captcha-btn {
+            background: linear-gradient(95deg, #0a1f2e, #004466);
+            border: 1.5px solid #0ff;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+        .captcha-btn:hover {
+            background: #0ff;
+            color: #000;
+            box-shadow: 0 0 30px #0ff;
+            transform: scale(1.02);
+        }
+        .error-msg {
+            color: #ff5555;
+            margin-top: 18px;
+            font-size: 0.9rem;
+            text-shadow: 0 0 3px red;
+        }
+        /* Social logos inside CAPTCHA */
+        .captcha-social {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0,255,255,0.3);
+        }
+        .captcha-social a {
+            color: #ccc;
+            font-size: 2rem;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .captcha-social a:hover {
+            color: #0ff;
+            transform: translateY(-5px) scale(1.1);
+            text-shadow: 0 0 15px #0ff;
+        }
+        /* Rest of the styles (same as before, optimized) */
+        #main-content { display: none; }
+        .cursor-glow {
+            width: 28px; height: 28px;
+            background: rgba(0, 255, 255, 0.4);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            filter: blur(6px);
+            box-shadow: 0 0 20px #0ff;
+        }
+        .preloader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #010101;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.3s ease;
+        }
+        .preloader .logo-animation {
+            width: 60px; height: 60px;
+            border: 3px solid #0ff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 25px #0ff;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .preloader p { margin-top: 15px; color: #0ff; text-shadow: 0 0 8px #0ff; font-size: 0.9rem; }
+        #bg-canvas, #matrix-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #bg-canvas { opacity: 0.5; }
+        #matrix-canvas { opacity: 0.1; z-index: 1; }
+        .floating-glow {
+            position: fixed;
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(0,255,255,0.15), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(40px);
+            animation: floatGlow 20s infinite alternate;
+        }
+        @keyframes floatGlow {
+            0% { transform: translate(0,0) scale(1); opacity: 0.2; }
+            100% { transform: translate(50px,40px) scale(1.2); opacity: 0.4; }
+        }
+        .content { position: relative; z-index: 10; }
+        .glass-card {
+            background: rgba(10,20,30,0.55);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(0,255,255,0.3);
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 0 10px rgba(0,255,255,0.2);
+            transition: all 0.35s ease;
+        }
+        .glass-card:hover {
+            border-color: #0ff;
+            box-shadow: 0 0 18px rgba(0,255,255,0.5);
+            transform: translateY(-5px);
+        }
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 70px 0; }
+        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .profile-img {
+            width: 150px; height: 150px; margin: 0 auto 20px;
+            background: linear-gradient(135deg, #0a1f2e, #021019);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid #0ff;
+            box-shadow: 0 0 35px #0ff;
+        }
+        .profile-img i { font-size: 75px; color: #0ff; text-shadow: 0 0 12px #0ff; }
+        .hero h1 { font-size: 3.2rem; font-weight: 800; background: linear-gradient(120deg, #fff, #0ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .username {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0ff;
+            text-shadow: 0 0 8px #0ff;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .username:hover { text-shadow: 0 0 18px #0ff; transform: scale(1.02); }
+        .online-status { display: inline-flex; align-items: center; background: rgba(0,255,0,0.1); padding: 5px 14px; border-radius: 40px; gap: 6px; border: 1px solid #0f0; margin-top: 10px; font-size: 0.9rem; }
+        .typing-area { font-size: 1.3rem; margin-top: 15px; min-height: 60px; }
+        #typed-output { color: #0ff; text-shadow: 0 0 5px #0ff; }
+        .bio-card, .channels-card {
+            text-align: left;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .bio-card p, .channel-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 1px dashed rgba(0,255,255,0.2);
+            padding-bottom: 6px;
+        }
+        .bio-card i, .channel-item i { width: 28px; color: #0ff; font-size: 1.1rem; }
+        .channel-item a { color: #0ff; text-decoration: none; font-weight: 500; transition: 0.2s; }
+        .channel-item a:hover { text-shadow: 0 0 6px #0ff; text-decoration: underline; }
+        .bio-quote {
+            background: rgba(0,255,255,0.1);
+            border-left: 4px solid #0ff;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 16px;
+            font-style: italic;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 20px; text-align: center; }
+        .stat-card { padding: 20px 10px; }
+        .stat-number { font-size: 2.3rem; font-weight: 800; color: #0ff; text-shadow: 0 0 8px #0ff; }
+        .section-title { font-size: 2rem; text-align: center; margin-bottom: 45px; font-weight: 700; }
+        .section-title span { background: linear-gradient(135deg, #fff, #0ff); -webkit-background-clip: text; background-clip: text; color: transparent; border-bottom: 2px solid #0ff; }
+        .services-grid, .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap: 25px; }
+        .service-card, .portfolio-card { padding: 25px 15px; text-align: center; }
+        .service-card i, .portfolio-card i { font-size: 2.5rem; color: #0ff; margin-bottom: 12px; }
+        .skill-item { margin-bottom: 18px; }
+        .skill-bar-bg { background: #1e2a32; border-radius: 30px; height: 10px; overflow: hidden; }
+        .skill-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #0ff, #0066ff); border-radius: 30px; transition: width 1s ease; }
+        .contact-form { max-width: 600px; margin: 0 auto; padding: 30px; }
+        .form-group { margin-bottom: 18px; }
+        input, textarea { width: 100%; background: rgba(20,30,45,0.8); border: 1px solid rgba(0,255,255,0.4); padding: 12px 16px; border-radius: 20px; color: white; font-size: 0.95rem; }
+        input:focus, textarea:focus { outline: none; border-color: #0ff; box-shadow: 0 0 12px #0ff; }
+        .btn-submit { background: linear-gradient(95deg, #0a1f2e, #004466); border: 1px solid #0ff; color: white; padding: 10px 25px; border-radius: 40px; cursor: pointer; transition: 0.3s; font-size: 0.95rem; }
+        .btn-submit:hover { background: #0ff; color: #000; box-shadow: 0 0 20px #0ff; }
+        .social-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .social-btn { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); border: 1px solid #0ff; padding: 10px 22px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; color: white; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
+        .social-btn:hover { background: #0ff; color: #000; box-shadow: 0 0 22px #0ff; transform: translateY(-3px); }
+        footer { background: rgba(0,0,0,0.7); padding: 25px 0; text-align: center; border-top: 1px solid #0ff; font-size: 0.85rem; }
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .typing-area { font-size: 1rem; }
+            section { padding: 50px 0; }
+            .bio-card, .channels-card { padding: 20px; }
+            .captcha-card { padding: 30px 20px; }
+            .captcha-card h2 { font-size: 1.6rem; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+</head>
+<body>
+
+<!-- ENHANCED CAPTCHA OVERLAY -->
+<div id="captchaOverlay" class="captcha-overlay">
+    <div class="captcha-card">
+        <i class="fas fa-shield-haltered main-icon"></i>
+        <h2>⚡ VERIFICATION ⚡</h2>
+        <div class="primary-text">🔐 ENTER SECRET CODE 🔐</div>
+        <input type="text" id="captchaInput" class="captcha-input" placeholder="•••••" autocomplete="off" maxlength="5">
+        <button id="verifyBtn" class="captcha-btn"><i class="fas fa-key"></i> UNLOCK DASHBOARD</button>
+        <div id="captchaError" class="error-msg"></div>
+        
+        <!-- Three Clickable Social Logos -->
+        <div class="captcha-social">
+            <a href="https://github.com/DRIFT127" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/d3kx243?igsh=Y29mZ29xdWc1NjM1" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/DG_DRIFT" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT (same as before) -->
+<div id="main-content">
+    <div class="preloader" id="preloader"><div class="logo-animation"></div><p>DRIFT PROFILE WEB</p></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="floating-glow" style="top:5%; left:-5%;"></div>
+    <div class="floating-glow" style="bottom:10%; right:-8%; animation-duration:25s;"></div>
+    <div class="floating-glow" style="top:50%; left:60%; width:180px; height:180px;"></div>
+
+    <div class="content">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="container">
+                <div class="profile-img glass-card"><i class="fas fa-skull"></i></div>
+                <h1>DG DRIFT</h1>
+                <a href="https://t.me/DG_DRIFT" target="_blank" style="text-decoration: none;">
+                    <div class="username">@DG_DRIFT</div>
+                </a>
+                <div class="online-status"><i class="fas fa-circle" style="color:#0f0;"></i> ONLINE · SILENT BUT DANGEROUS</div>
+                <div class="typing-area"><span>⚡ </span><span id="typed-output"></span></div>
+            </div>
+        </section>
+
+        <!-- Bio Section -->
+        <section id="bio">
+            <div class="container">
+                <h2 class="section-title"><span>🥀 𝐁𝐈𝐎 𝐇𝐔𝐁</span></h2>
+                <div class="glass-card bio-card">
+                    <p><i class="fas fa-user-secret"></i> <strong>👤 𝐍𝐚𝐦𝐞 :</strong> 𝐃𝐆 𝐃𝐑𝐈𝐅𝐓 💀</p>
+                    <p><i class="fab fa-telegram"></i> <strong>⚡ 𝐓𝐠 𝐔𝐬𝐞𝐫𝐧𝐚𝐦𝐞 :</strong> <a href="https://t.me/DG_DRIFT" target="_blank" style="color:#0ff;">@DG_DRIFT</a></p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>🌍 𝐅𝐫𝐨𝐦 :</strong> 𝐈𝐧𝐝𝐢𝐚 🇮🇳</p>
+                    <p><i class="fas fa-birthday-cake"></i> <strong>🎂 𝐀𝐠𝐞 :</strong> 𝟏𝟔+</p>
+                    <p><i class="fas fa-heart"></i> <strong>💎 𝐒𝐭𝐚𝐭𝐮𝐬 :</strong> 𝐒𝐢𝐧𝐠𝐥𝐞 💙</p>
+                    <p><i class="fas fa-dragon"></i> <strong>🔥 𝐀𝐭𝐭𝐢𝐭𝐮𝐝𝐞 :</strong> 𝐒𝐢𝐥𝐞𝐧𝐭 𝐁𝐮𝐭 𝐃𝐚𝐧𝐠𝐞𝐫𝐨𝐮𝐬 😈</p>
+                    <p><i class="fas fa-rocket"></i> <strong>🎯 𝐃𝐫𝐞𝐚𝐦 :</strong> 𝐁𝐮𝐢𝐥𝐝 𝐒𝐨𝐦𝐞𝐭𝐡𝐢𝐧𝐠 𝐓𝐡𝐚𝐭 𝐏𝐞𝐨𝐩𝐥𝐞 𝐂𝐚𝐧'𝐭 𝐅𝐨𝐫𝐠𝐞𝐭 ⚡</p>
+                    <p><i class="fas fa-gamepad"></i> <strong>🎮 𝐅𝐚𝐯 𝐆𝐚𝐦𝐞 :</strong> 𝐅𝐫𝐞𝐞 𝐅𝐢𝐫𝐞 🔥</p>
+                    <p><i class="fab fa-telegram-plane"></i> <strong>📱 𝐅𝐚𝐯 𝐀𝐩𝐩 :</strong> 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 🤍</p>
+                    <p><i class="fas fa-futbol"></i> <strong>⚽ 𝐓𝐢𝐦𝐞 𝐏𝐚𝐬𝐬 :</strong> 𝐂𝐫𝐢𝐜𝐤𝐞𝐭, 𝐆𝐚𝐦𝐢𝐧𝐠 🎯</p>
+                    <p><i class="fas fa-brain"></i> <strong>🧠 𝐌𝐞𝐧𝐭𝐚𝐥𝐢𝐭𝐲 :</strong> 𝐍𝐞𝐯𝐞𝐫 𝐅𝐨𝐥𝐥𝐨𝐰 — 𝐂𝐫𝐞𝐚𝐭𝐞 𝐘𝐨𝐮𝐫 𝐎𝐰𝐧 𝐏𝐚𝐭𝐡 ⚡</p>
+                    <div class="bio-quote">
+                        ❝ 𝐒𝐭𝐚𝐲 𝐋𝐨𝐰𝐤𝐞𝐲, 𝐖𝐨𝐫𝐤 𝐇𝐚𝐫𝐝 & 𝐌𝐚𝐤𝐞 𝐘𝐨𝐮𝐫 𝐎𝐰𝐧 𝐋𝐞𝐠𝐚𝐜𝐲 ❞<br>
+                        💙 𝐑𝐞𝐬𝐩𝐞𝐜𝐭 𝐄𝐯𝐞𝐫𝐲𝐨𝐧𝐞 &nbsp;|&nbsp; 🤝 𝐓𝐫𝐮𝐬𝐭 𝐅𝐞𝐰 &nbsp;|&nbsp; ⚡ 𝐅𝐞𝐚𝐫 𝐍𝐨𝐧𝐞<br>
+                        🚫 𝐃𝐨𝐧'𝐭 𝐉𝐮𝐝𝐠𝐞 𝐌𝐞 𝐁𝐲 𝐌𝐲 𝐏𝐫𝐨𝐟𝐢𝐥𝐞 — 💎 𝐉𝐮𝐝𝐠𝐞 𝐌𝐞 𝐁𝐲 𝐌𝐲 𝐖𝐨𝐫𝐤
+                    </div>
+                    <p style="text-align: center; margin-top: 15px;"><strong>🛡️ 𝐃𝐆 𝐃𝐑𝐈𝐅𝐓 🛡️</strong> ⚡ 𝐒𝐢𝐥𝐞𝐧𝐭 • 𝐒𝐦𝐚𝐫𝐭 • 𝐔𝐧𝐬𝐭𝐨𝐩𝐩𝐚𝐛𝐥𝐞 ⚡</p>
+                    <p style="text-align: center;">💙 𝐓𝐡𝐚𝐧𝐤𝐬 𝐅𝐨𝐫 𝐕𝐢𝐬𝐢𝐭𝐢𝐧𝐠 𝐌𝐲 𝐁𝐢𝐨 💙<br>🔥 𝐃𝐫𝐨𝐩 𝐀 𝐑𝐞𝐚𝐜𝐭𝐢𝐨𝐧 𝐈𝐟 𝐘𝐨𝐮 𝐋𝐢𝐤𝐞 𝐈𝐭 🔥</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Channels Section -->
+        <section id="channels">
+            <div class="container">
+                <h2 class="section-title"><span>📢 Oᴜʀ Cʜᴀɴɴᴇʟs</span></h2>
+                <div class="glass-card channels-card">
+                    <div class="channel-item"><i class="fas fa-crown"></i> <a href="https://t.me/DGDRIFT" target="_blank"><strong>👑 Dɢ Dʀɪғᴛ</strong></a></div>
+                    <div class="channel-item"><i class="fas fa-rocket"></i> <a href="https://t.me/DRIFTARMYFF" target="_blank"><strong>🚀 Dʀɪғᴛ Aʀᴍʏ</strong></a></div>
+                    <div class="channel-item"><i class="fas fa-code"></i> <a href="https://t.me/driftfreesourcecode" target="_blank"><strong>📂 Dʀɪғᴛ Fʀᴇᴇ Sᴏᴜʀᴄᴇ Cᴏᴅᴇ</strong></a></div>
+                    <div class="channel-item"><i class="fas fa-plug"></i> <a href="https://t.me/driftfreeapis" target="_blank"><strong>⚡ Dʀɪғᴛ Fʀᴇᴇ Aᴘɪs</strong></a></div>
+                    <div class="channel-item"><i class="fas fa-database"></i> <a href="https://t.me/driftbackup" target="_blank"><strong>🔄 Dʀɪғᴛ Bᴀᴄᴋᴜᴘ</strong></a></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats"><div class="container"><div class="stats-grid">
+            <div class="stat-card glass-card"><div class="stat-number" data-target="50">0</div><div>Projects Completed</div></div>
+            <div class="stat-card glass-card"><div class="stat-number" data-target="20">0</div><div>Telegram Bots</div></div>
+            <div class="stat-card glass-card"><div class="stat-number" data-target="10">0</div><div>K+ Users</div></div>
+            <div class="stat-card glass-card"><div class="stat-number" data-target="99">0</div><div>% Uptime</div></div>
+            <div class="stat-card glass-card"><div class="stat-number" data-target="3">0</div><div>+ Years Experience</div></div>
+        </div></div></section>
+
+        <!-- Skills Section -->
+        <section id="skills"><div class="container"><h2 class="section-title"><span>📊 TECHNICAL MASTERY</span></h2><div class="glass-card" style="padding:30px;">
+            <div class="skill-item"><span>Python</span><div class="skill-bar-bg"><div class="skill-fill" data-skill="92"></div></div></div>
+            <div class="skill-item"><span>HTML5 & CSS3</span><div class="skill-bar-bg"><div class="skill-fill" data-skill="88"></div></div></div>
+            <div class="skill-item"><span>JavaScript</span><div class="skill-bar-bg"><div class="skill-fill" data-skill="85"></div></div></div>
+            <div class="skill-item"><span>Telegram API</span><div class="skill-bar-bg"><div class="skill-fill" data-skill="95"></div></div></div>
+            <div class="skill-item"><span>Cyber Security</span><div class="skill-bar-bg"><div class="skill-fill" data-skill="89"></div></div></div>
+            <div class="skill-item"><span>Linux / Bash</span><div class="skill-bar-bg"><div class="skill-fill" data-skill="86"></div></div></div>
+            <div class="skill-item"><span>Web Development</span><div class="skill-bar-bg"><div class="skill-fill" data-skill="90"></div></div></div>
+        </div></div></section>
+
+        <!-- Services Section -->
+        <section id="services"><div class="container"><h2 class="section-title"><span>⚡ CORE SERVICES</span></h2><div class="services-grid">
+            <div class="service-card glass-card"><i class="fab fa-telegram"></i><h3>Telegram Bot Development</h3></div>
+            <div class="service-card glass-card"><i class="fas fa-lock"></i><h3>File Protection Systems</h3></div>
+            <div class="service-card glass-card"><i class="fas fa-globe"></i><h3>Website Development</h3></div>
+            <div class="service-card glass-card"><i class="fas fa-robot"></i><h3>Automation Tools</h3></div>
+            <div class="service-card glass-card"><i class="fas fa-shield-alt"></i><h3>Security Solutions</h3></div>
+            <div class="service-card glass-card"><i class="fas fa-cloud-upload-alt"></i><h3>Hosting & Deployment</h3></div>
+        </div></div></section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio"><div class="container"><h2 class="section-title"><span>📁 LATEST PROJECTS</span></h2><div class="portfolio-grid">
+            <div class="portfolio-card glass-card"><i class="fas fa-robot"></i><h3>Telegram Bot Manager</h3><div style="color:#0ff;">🔒 secure</div></div>
+            <div class="portfolio-card glass-card"><i class="fas fa-file-contract"></i><h3>FileGuard Security</h3><div style="color:#0ff;">🔑 military grade</div></div>
+            <div class="portfolio-card glass-card"><i class="fas fa-eye"></i><h3>Web Vulnerability Scanner</h3><div style="color:#0ff;">⚡ realtime</div></div>
+            <div class="portfolio-card glass-card"><i class="fas fa-cogs"></i><h3>Automation Hub</h3><div style="color:#0ff;">🚀 CI/CD ready</div></div>
+        </div></div></section>
+
+        <!-- Contact Section -->
+        <section id="contact"><div class="container"><h2 class="section-title"><span>📬 SECURE MESSAGE</span></h2>
+        <div class="glass-card contact-form">
+            <form id="contactForm" method="POST" action="/contact">
+                <div class="form-group"><input type="text" name="name" placeholder="Full Name" required></div>
+                <div class="form-group"><input type="email" name="email" placeholder="Email Address" required></div>
+                <div class="form-group"><textarea name="message" rows="3" placeholder="Your encrypted message..." required></textarea></div>
+                <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Transmission</button>
+                <p id="formStatus" style="margin-top:15px; color:#0ff; font-size:0.85rem;"></p>
+            </form>
+        </div></div></section>
+
+        <!-- Social Section -->
+        <section id="social"><div class="container" style="text-align:center;"><h2 class="section-title"><span>🌐 DARK NETWORK</span></h2><div class="social-buttons">
+            <a href="https://t.me/DG_DRIFT" target="_blank" class="social-btn"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://github.com/DRIFT127" target="_blank" class="social-btn"><i class="fab fa-github"></i> GitHub</a>
+            <a href="https://youtube.com/@dgdrift?si=zXaSNLuR0SbLL3al" target="_blank" class="social-btn"><i class="fab fa-youtube"></i> YouTube</a>
+            <a href="https://www.instagram.com/d3kx243?igsh=Y29mZ29xdWc1NjM1" target="_blank" class="social-btn"><i class="fab fa-instagram"></i> Instagram</a>
+        </div></div></section>
+
+        <footer><p>© 2026 DRIFT PROFILE WEB • All systems operational</p><p>Made with <i class="fas fa-heart" style="color:#0ff;"></i> by DG DRIFT</p></footer>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const overlay = document.getElementById('captchaOverlay');
+        const mainContent = document.getElementById('main-content');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const captchaInput = document.getElementById('captchaInput');
+        const errorMsg = document.getElementById('captchaError');
+        const correctCode = "DRIFT";
+
+        if (sessionStorage.getItem('driftVerified') === 'true') {
+            overlay.style.display = 'none';
+            mainContent.style.display = 'block';
+            initMainScripts();
+        } else {
+            overlay.style.display = 'flex';
+            mainContent.style.display = 'none';
+        }
+
+        verifyBtn.addEventListener('click', () => {
+            const userCode = captchaInput.value.trim();
+            if (userCode.toUpperCase() === correctCode) {
+                sessionStorage.setItem('driftVerified', 'true');
+                overlay.style.display = 'none';
+                mainContent.style.display = 'block';
+                initMainScripts();
+            } else {
+                errorMsg.innerText = '❌ ACCESS DENIED • CODE MISMATCH';
+                captchaInput.value = '';
+                captchaInput.focus();
+            }
+        });
+
+        captchaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifyBtn.click();
+        });
+
+        function initMainScripts() {
+            setTimeout(() => {
+                let pre = document.getElementById('preloader');
+                if (pre) {
+                    pre.style.opacity = '0';
+                    setTimeout(() => { if(pre) pre.style.display = 'none'; }, 300);
+                }
+            }, 300);
+
+            if (typeof Typed !== 'undefined') {
+                new Typed('#typed-output', {
+                    strings: ["Security Developer", "Telegram Bot Creator", "Web Developer", "Automation Expert"],
+                    typeSpeed: 55, backSpeed: 40, loop: true, cursorChar: "▮"
+                });
+            }
+
+            const statNumbers = document.querySelectorAll('.stat-number');
+            let counted = false;
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting && !counted) {
+                        statNumbers.forEach(el => {
+                            let target = parseInt(el.getAttribute('data-target'));
+                            let current = 0;
+                            let increment = target / 45;
+                            let update = () => {
+                                current += increment;
+                                if(current < target) { el.innerText = Math.floor(current); requestAnimationFrame(update); }
+                                else el.innerText = (target === 99) ? "99.9" : target;
+                            }; update();
+                        });
+                        counted = true; counterObserver.disconnect();
+                    }
+                });
+            }, {threshold:0.4});
+            if(statNumbers.length) counterObserver.observe(document.querySelector('#stats'));
+
+            const skillFills = document.querySelectorAll('.skill-fill');
+            const skillObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        skillFills.forEach(fill => { fill.style.width = fill.getAttribute('data-skill') + '%'; });
+                        skillObserver.disconnect();
+                    }
+                });
+            }, {threshold:0.2});
+            if(document.querySelector('#skills')) skillObserver.observe(document.querySelector('#skills'));
+
+            document.querySelectorAll('.glass-card, .stat-card, .service-card, .portfolio-card, .section-title, .bio-card, .channels-card').forEach(el => el.classList.add('reveal'));
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
+            }, {threshold:0.1});
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+            const form = document.getElementById('contactForm');
+            const statusDiv = document.getElementById('formStatus');
+            if(form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                    try {
+                        const res = await fetch('/contact', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if(data.status === 'success') {
+                            statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+                            form.reset();
+                            setTimeout(() => statusDiv.innerHTML = '', 3000);
+                        } else throw new Error();
+                    } catch(err) {
+                        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error. Try again.';
+                    }
+                });
+            }
+
+            const cursor = document.getElementById('cursorGlow');
+            document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+            document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+            document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+
+            const canvas = document.getElementById('bg-canvas');
+            if(canvas) {
+                const ctx = canvas.getContext('2d');
+                let width = window.innerWidth, height = window.innerHeight;
+                let particles = [];
+                const PARTICLE_COUNT = 35;
+                function resizeCanvas() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; initParticles(); }
+                function initParticles() {
+                    particles = [];
+                    for(let i=0;i<PARTICLE_COUNT;i++) {
+                        particles.push({ x: Math.random()*width, y: Math.random()*height, radius: Math.random()*1.5+0.8, alpha: Math.random()*0.4+0.2, vx: (Math.random()-0.5)*0.4, vy: (Math.random()-0.5)*0.2 });
+                    }
+                }
+                function drawGrid() {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(0,180,255,0.15)';
+                    ctx.lineWidth = 0.8;
+                    let step = 45;
+                    for(let x=0;x<width;x+=step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x+Math.sin(Date.now()*0.0005)*2, height); ctx.stroke(); }
+                    for(let y=0;y<height;y+=step) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(width, y+Math.cos(Date.now()*0.0004)*2); ctx.stroke(); }
+                }
+                function drawParticles() {
+                    for(let p of particles) {
+                        ctx.beginPath();
+                        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+                        ctx.fillStyle = `rgba(0,200,255,${p.alpha+Math.sin(Date.now()*0.001)*0.05})`;
+                        ctx.fill();
+                        p.x += p.vx; p.y += p.vy;
+                        if(p.x<0) p.x=width; if(p.x>width) p.x=0; if(p.y<0) p.y=height; if(p.y>height) p.y=0;
+                    }
+                }
+                function animateBG() { ctx.clearRect(0,0,width,height); drawGrid(); drawParticles(); requestAnimationFrame(animateBG); }
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas(); animateBG();
+            }
+
+            const matCanvas = document.getElementById('matrix-canvas');
+            if(matCanvas) {
+                const matCtx = matCanvas.getContext('2d');
+                let matWidth, matHeight, columns, drops;
+                function resizeMatrix() { matWidth = window.innerWidth; matHeight = window.innerHeight; matCanvas.width = matWidth; matCanvas.height = matHeight; columns = Math.floor(matWidth/35); drops = Array(columns).fill(1); }
+                function drawMatrix() {
+                    matCtx.fillStyle = 'rgba(0,0,0,0.04)';
+                    matCtx.fillRect(0,0,matWidth,matHeight);
+                    matCtx.fillStyle = '#0f8';
+                    matCtx.font = '12px monospace';
+                    for(let i=0;i<drops.length;i++) {
+                        let text = String.fromCharCode(Math.random()>0.6?0x30A0+Math.random()*80:0x0030+Math.random()*10);
+                        matCtx.fillText(text, i*35, drops[i]*18);
+                        if(drops[i]*18 > matHeight && Math.random()>0.98) drops[i]=0;
+                        drops[i]++;
+                    }
+                    requestAnimationFrame(drawMatrix);
+                }
+                window.addEventListener('resize', resizeMatrix);
+                resizeMatrix(); drawMatrix();
+            }
+
+            window.addEventListener('scroll', () => {
+                let sy = window.scrollY;
+                document.querySelectorAll('.floating-glow').forEach((el,i) => {
+                    el.style.transform = `translateY(${sy * (0.05 + i*0.02)}px)`;
+                });
+            });
+        }
+    })();
+</script>
+</body>
+      </html>
